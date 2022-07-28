@@ -9,7 +9,7 @@ const initialState = {
 export const navSlice = createSlice({
   name: "nav",
   initialState,
-  reducer: {
+  reducers: {
     setOrigin: (state, action) => {
       state.origin = action.payload;
     },
@@ -31,4 +31,3 @@ export const selectTravelTimeInformation = (state) =>
   state.nav.travelTimeInformation;
 
 export default navSlice.reducer;
-import { configureStore } from "@reduxjs/toolkit";

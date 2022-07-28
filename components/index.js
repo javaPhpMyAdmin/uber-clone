@@ -1,1 +1,5 @@
 export * from './NavOptions'
+export * from './RideOptionsCard'
+export * from './NavigateCard'
+export * from './Map'
+export * from './testMapView'
