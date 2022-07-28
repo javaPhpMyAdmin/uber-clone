@@ -17,7 +17,7 @@ export default function App() {
         <SafeAreaProvider>
           <Stack.Navigator>
             <Stack.Screen
-              name="HomeScreen"
+              name="testMapView"
               component={HomeScreen}
               options={{
                 headerShown: false,
