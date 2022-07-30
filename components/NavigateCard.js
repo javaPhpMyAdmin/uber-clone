@@ -1,4 +1,10 @@
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React from "react";
 import tailwind from "twrnc";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
@@ -6,6 +12,8 @@ import { GOOGLE_MAPS_APIKEY } from "@env";
 import { useDispatch } from "react-redux";
 import { setDestination } from "../Slices/navSlice";
 import { useNavigation } from "@react-navigation/native";
+import { NavFavourites } from "./NavFavourites";
+import { Icon } from "react-native-elements";
 
 export const NavigateCard = () => {
   const dispatch = useDispatch();
@@ -30,7 +38,7 @@ export const NavigateCard = () => {
               key: GOOGLE_MAPS_APIKEY,
               language: "en",
             }}
-            onPress={(data, details=null) => {
+            onPress={(data, details = null) => {
               dispatch(
                 setDestination({
                   location: details?.geometry.location,
@@ -41,6 +49,27 @@ export const NavigateCard = () => {
             }}
           />
         </View>
+        <NavFavourites />
+      </View>
+      <View style={tailwind`py-2 mt-auto border-t border-gray-100 flex-row bg-white justify-evenly`}>
+        <TouchableOpacity
+          onPress={()=>navigation.navigate('RideOptionsCard')}
+          style={tailwind`flex flex-row bg-black w-24 px-4 py-3 rounded-full justify-between`}
+        >
+          <Icon name="car" type="font-awesome" color="white" size={16} />
+          <Text style={tailwind`text-white text-center`}>Rides</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={tailwind`flex flex-row bg-black w-24 px-4 py-3 rounded-full justify-between`}
+        >
+          <Icon
+            name="fast-food-outline"
+            type="ionicon"
+            color="white"
+            size={16}
+          />
+          <Text style={tailwind`text-white text-center`}>Eats</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
