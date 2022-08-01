@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import tailwind from "twrnc";
-import { useSelector } from "react-redux";
-import { selectDestination, selectOrigin } from "../Slices/navSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { selectDestination, selectOrigin, setTravelTimeInformation } from "../Slices/navSlice";
 import { GOOGLE_MAPS_APIKEY, GOOGLE_MAPS_DIRECTIONS } from "@env";
 import { decode } from "@googlemaps/polyline-codec";
 
@@ -14,6 +14,7 @@ export const MyMap = () => {
   const destination = useSelector(selectDestination);
   const mapRef = useRef(null);
   const [coords, setCoords] = useState([]);
+  const dispatch = useDispatch()
 
   const getDirections = async (ori, dest) => {
     try {
@@ -42,6 +43,25 @@ export const MyMap = () => {
       edgePadding: { top: 50, right: 50, bottom: 50, left: 50 },
     });
   }, [origin, destination]);
+
+  useEffect(() => {
+    if (!origin || !destination) return;
+
+    const getTimeTravel = async () => {
+      try {
+        /* const travelTime = await fetch('https://maps.googleapis.com/maps/api/distancematrix/json?destinations=-34.7071849,-56.2157287&origins=-34.6488719,-56.0668126&key=AIzaSyCbHAKvVJjpmPy6jdgSdw92DcP6UfT5XJk')*/
+        const travelTime = await fetch(
+          `https://maps.googleapis.com/maps/api/distancematrix/json?destinations=${destination.location.lat},${destination.location.lng}&origins=${origin.location.lat},${origin.location.lng}&units=imperial&key=${GOOGLE_MAPS_DIRECTIONS}`
+        );
+        const timeTravel = await travelTime.json();
+        dispatch(setTravelTimeInformation(timeTravel.rows[0].elements[0]))
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getTimeTravel();
+  }, [origin, destination, GOOGLE_MAPS_DIRECTIONS]);
 
   return (
     <>

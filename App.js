@@ -22,7 +22,7 @@ export default function App() {
           >
             <Stack.Navigator>
               <Stack.Screen
-                name="testMapView"
+                name="HomeScreen"
                 component={HomeScreen}
                 options={{
                   headerShown: false,

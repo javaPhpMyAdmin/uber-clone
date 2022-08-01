@@ -10,6 +10,10 @@ import React, { useState } from "react";
 import tailwind from "twrnc";
 import { Icon } from "react-native-elements/dist/icons/Icon";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { selectTravelTimeInformation } from "../Slices/navSlice";
+
+const SURGE_CHARGE_RATE = 1.5;
 
 const data = [
   {
@@ -35,6 +39,7 @@ const data = [
 export const RideOptionsCard = () => {
   const navigation = useNavigation();
   const [selectedCar, setSelectedCar] = useState(null);
+  const travelTimeInformation = useSelector(selectTravelTimeInformation);
   return (
     <SafeAreaView style={tailwind`bg-white flex-grow`}>
       <View>
@@ -44,31 +49,48 @@ export const RideOptionsCard = () => {
         >
           <Icon name="chevron-left" type="font-awesome" />
         </TouchableOpacity>
-        <Text style={tailwind`text-center py-5 text-xl`}>Select a Ride</Text>
+        <Text style={tailwind`text-center py-5 text-xl`}>
+          Select a Ride - {travelTimeInformation?.distance?.text}
+        </Text>
       </View>
       <FlatList
         data={data}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => setSelectedCar(item)}
-            style={tailwind`flex-row justify-between items-center px-10 ${
-              item.id === selectedCar?.id && "bg-gray-200"
-            }`}
-          >
-            <Image
-              style={{ width: 100, height: 100, resizeMode: "contain" }}
-              source={{ uri: item.image }}
-            />
-            <View style={tailwind`-ml-6`}>
-              <Text style={tailwind`text-xl font-semibold`}>{item.title}</Text>
-              <Text>Travel time...</Text>
-            </View>
-            <Text>US$500</Text>
-          </TouchableOpacity>
-        )}
+        renderItem={({ item }) => {
+          const finalPrice = new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+          }).format(
+            (travelTimeInformation?.duration?.value *
+              SURGE_CHARGE_RATE *
+              item.multiplier) /
+              100
+          );
+          const travelCost = finalPrice * 45;
+
+          return (
+            <TouchableOpacity
+              onPress={() => setSelectedCar(item)}
+              style={tailwind`flex-row justify-between items-center px-10 ${
+                item.id === selectedCar?.id && "bg-gray-200"
+              }`}
+            >
+              <Image
+                style={{ width: 100, height: 100, resizeMode: "contain" }}
+                source={{ uri: item.image }}
+              />
+              <View style={tailwind`-ml-6`}>
+                <Text style={tailwind`text-xl font-semibold`}>
+                  {item.title}
+                </Text>
+                <Text>{travelTimeInformation?.duration?.text} Travel Time</Text>
+              </View>
+              <Text>{finalPrice}</Text>
+            </TouchableOpacity>
+          );
+        }}
       />
-      <View>
+      <View style={tailwind`mt-auto border-t border-gray-200`}>
         <TouchableOpacity
           disabled={!selectedCar}
           style={tailwind`m-3 bg-black py-3 ${!selectedCar && "bg-gray-300"}`}
